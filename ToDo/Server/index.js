@@ -31,21 +31,21 @@ var makeNewTodo = (title, description) => {
 }
 
 
-// // Get all the ToDo items
-// app.get('/todos', (req, res) => {
-//     res.status(200);
-//     res.json(todos);
-// });
-
-// Remove todo
-app.post('/removeTodo', (req, res) => {
-    console.log(req.body);
-    console.log(todos);
-    idToRemove = req.id;
-    todos = todos.filter(function(item) {
-        return item.id != idToRemove;
-    });
+// Get all the ToDo items
+app.get('/todos', (req, res) => {
+    res.status(200);
+    res.json(todos);
 });
+
+// // Remove todo
+// app.post('/removeTodo', (req, res) => {
+//     console.log(req.body);
+//     console.log(todos);
+//     idToRemove = req.id;
+//     todos = todos.filter(function(item) {
+//         return item.id != idToRemove;
+//     });
+// });
 
 // Add a new ToDo item
 app.post('/todos', (req, res) => {
