@@ -102,34 +102,63 @@
             //Inputs
             var title = document.createElement("INPUT");
             title.setAttribute("id", "newTitle");
-            title.setAttribute("placeholder", "Name");
+            title.setAttribute("placeholder", "Enter Title");
+            title.setAttribute("hidden", "true");
             
             var description = document.createElement("INPUT");
             description.setAttribute("id", "newDescription");
-            description.setAttribute("placeholder", "Description");
+            description.setAttribute("placeholder", "Add Description");
+            description.setAttribute("hidden", "true");
 
-            //Button
-            var button = document.createElement("BUTTON");
-            button.setAttribute("type", "submit");
-            var t = document.createTextNode("Add Task");            
+            //Fab
+            var fab = document.createElement("DIV");
+            fab.setAttribute("class", "fab");
+            fab.setAttribute("id", "fab");
+
+            //Submit button
+            var submit = document.createElement("DIV");
+            submit.setAttribute("id", "submit");
+            submit.setAttribute("hidden", "true");
+
             //Put everything on the doc
             $("#newTodo").append(form);
             document.getElementById("newTodo").appendChild(title);
             document.getElementById("newTodo").appendChild(description);
-            $("#newTodo").append(button);
-            button.appendChild(t);
-            //Button listener to call createTodo action
-            button.addEventListener("click", function(){ 
+            $("#newTodo").append(fab);
+            $("#newTodo").append(submit);
+            $("#fab").append("+");
+            $("#submit").append("+");
+           
+            //Fab listener to show inputs
+            fab.addEventListener("click", function(){
+                var hidden = $("#newTitle").attr("hidden")
+                if(typeof hidden == typeof undefined){
+                    $("#newTitle").attr("hidden", "true");
+                    $("#newDescription").attr("hidden", "true");
+                    $("#submit").attr("hidden", "true");
+                    $("#fab").empty();  
+                    $("#fab").append("+");
+                }else{
+                    $("#newTitle").removeAttr("hidden");
+                    $("#newDescription").removeAttr("hidden");
+                    $("#submit").removeAttr("hidden");
+                    $("#fab").empty();
+                    $("#fab").append("-");
+                }   
+            });
+
+            //Submit listener to call createTodo action
+            submit.addEventListener("click", function(){
                 createTodo();
                 //Reset form
                 document.getElementById("newTitle").value = "";
                 document.getElementById("newDescription").value = "";
-            });
+            })
         }
         
         var renderTodo = (todo) => {
             var todoElem = todoTemplate.content.cloneNode(true);
-            todoElem.querySelector(".todo-id_name").innerText = todo.id + ".) " + todo.title;
+            todoElem.querySelector(".todo-id_name").innerText = todo.id + ". " + todo.title;
             todoElem.querySelector(".todo-title").innerText = todo.title;
             todoElem.querySelector(".todo-description").innerText = todo.description;
             return todoElem;
