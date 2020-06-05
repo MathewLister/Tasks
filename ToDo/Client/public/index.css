@@ -1,11 +1,51 @@
 h1{
   font-family: 'Roboto';
-  font-size: 50px;;
+  font-size: 50px;
+  text-align: center;
+  margin-top: 0%;
+  margin-bottom: 5%;
 }
 
-body {
+body{
   font-family: 'Roboto';
   font-size: 30px;
+  /* margin: auto;
+  width: 30%;
+  border: 3px solid gray;
+  margin-top: 20%;
+  padding: 10px;
+  box-shadow: 5px 10px #888888; */
+  background-color: white;
 }
 
+#container-center{
+  margin: auto;
+  width: 30%;
+  border: 3px solid gray;
+  margin-top: 10%;
+  margin-bottom: 10%;
+  padding: 10px;
+  box-shadow: 5px 10px #888888;
+}
 
+#nameBlurred{
+  opacity: 0.2;
+}
+
+#nameUnblurred{
+  opacity: 1;
+}
+
+dt:hover {
+  background-color: #ccc;
+}
+
+#description{
+  margin: auto;
+  width: inherit;
+  border: 3px solid black;
+  margin-top: 5%;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 5px 10px #888888;
+}

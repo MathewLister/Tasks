@@ -232,18 +232,18 @@
         var hidden = $(this).next().next().attr('hidden');
         if(typeof hidden == typeof undefined){
             $(this).next().next().attr('hidden', 'true');
+            $(this).attr("id", "nameUnblurred");
         }else{
             $(this).next().next().removeAttr('hidden');
+            $(this).attr("id", "nameBlurred");
         }
     });
 </script>
-
-<body>
+<body id="container-center">
     <h1>
         Tasks
     </h1>
-    <div id="app">
-    </div>
+    <div id="app"></div>
 </body>
 
 <template id="loading">
@@ -259,9 +259,9 @@
 </template>
 
 <template id="todo">
-    <dt class="todo-id_name"></dt>
+    <dt style="cursor: pointer;" class="todo-id_name"></dt>
     <dd hidden class="todo-title"></dd>
-    <dd hidden class="todo-description"></dd>
+    <dd hidden id="description" class="todo-description"></dd>
     <br>
 </template>
 
