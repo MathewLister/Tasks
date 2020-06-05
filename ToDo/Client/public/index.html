@@ -95,13 +95,10 @@
             // TODO
             // create html form, input elements and button
             // attach listener to button to call createTodo action
-
             //Form
             var form= document.createElement("FORM");
-
             form.setAttribute("id", "newTodo");
-            document.body.appendChild(form);
-
+            
             //Inputs
             var title = document.createElement("INPUT");
             title.setAttribute("id", "newTitle");
@@ -111,20 +108,23 @@
             description.setAttribute("id", "newDescription");
             description.setAttribute("placeholder", "Description");
 
-            document.getElementById("newTodo").appendChild(title);
-            document.getElementById("newTodo").appendChild(description);
-
             //Button
             var button = document.createElement("BUTTON");
             button.setAttribute("type", "submit");
-            var t = document.createTextNode("Add Task");
+            var t = document.createTextNode("Add Task");            
+            //Put everything on the doc
+            $("#newTodo").append(form);
+            document.getElementById("newTodo").appendChild(title);
+            document.getElementById("newTodo").appendChild(description);
+            $("#newTodo").append(button);
             button.appendChild(t);
             //Button listener to call createTodo action
             button.addEventListener("click", function(){ 
                 createTodo();
-                document.getElementById("newTodo").reset();
-            }); 
-            document.body.appendChild(button);
+                //Reset form
+                document.getElementById("newTitle").value = "";
+                document.getElementById("newDescription").value = "";
+            });
         }
         
         var renderTodo = (todo) => {
@@ -239,11 +239,14 @@
         }
     });
 </script>
-<body id="container-center">
-    <h1>
-        Tasks
-    </h1>
-    <div id="app"></div>
+<body>
+    <div class="container-center">
+        <p class="title">
+            Tasks
+        </p>
+        <div id="app"></div>
+        <div id="newTodo"></div>
+    </div>
 </body>
 
 <template id="loading">
