@@ -30,10 +30,21 @@ var makeNewTodo = (title, description) => {
     return todo;
 }
 
-// Get all the ToDo items
-app.get('/todos', (req, res) => {
-    res.status(200);
-    res.json(todos);
+
+// // Get all the ToDo items
+// app.get('/todos', (req, res) => {
+//     res.status(200);
+//     res.json(todos);
+// });
+
+// Remove todo
+app.post('/removeTodo', (req, res) => {
+    console.log(req.body);
+    console.log(todos);
+    idToRemove = req.id;
+    todos = todos.filter(function(item) {
+        return item.id != idToRemove;
+    });
 });
 
 // Add a new ToDo item
@@ -59,7 +70,7 @@ app.post('/todos', (req, res) => {
 });
 
 // Get a single ToDo item
-app.get('/todos/{id}', (req, res) => {
+app.post('/todos/{id}', (req, res) => {
     var idParam = req.params.id;
     let id;
     try {
@@ -91,5 +102,4 @@ app.get('/todos/{id}', (req, res) => {
     res.status(200);
     res.json(todo);
 })
-
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
