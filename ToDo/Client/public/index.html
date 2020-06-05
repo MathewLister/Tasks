@@ -38,6 +38,34 @@
         });
     };
 
+    // function postRemove(id) {
+    //     return new Promise((resolve, reject) => {
+    //         try {
+    //             jQuery.ajax({
+    //                 url: "http://localhost:3000/remove/removeTodo",
+    //                 method: "POST",
+    //                 contentType: "application/json",
+    //                 data: JSON.stringify({
+    //                     id: id
+    //                 }),
+    //                 success: (data, textStatus, jqXHR) => {
+    //                     resolve(data);
+    //                 },
+    //                 error: (jqXHR, textStatus, error) => {
+    //                     console.log(JSON.stringify(id));
+    //                     reject({
+    //                         jqXHR,
+    //                         textStatus,
+    //                         error
+    //                     });
+    //                 }
+    //             });
+    //         } catch (e) {
+    //             reject(e);
+    //         }
+    //     });
+    // };
+
     function fetchTodos() {
         return new Promise((resolve, reject) => {
             try {
@@ -158,6 +186,7 @@
         
         var renderTodo = (todo) => {
             var todoElem = todoTemplate.content.cloneNode(true);
+            todoElem.querySelector(".todo-id").innerText = todo.id;
             todoElem.querySelector(".todo-id_name").innerText = todo.id + ". " + todo.title;
             todoElem.querySelector(".todo-title").innerText = todo.title;
             todoElem.querySelector(".todo-description").innerText = todo.description;
@@ -239,6 +268,18 @@
             })
         }
 
+        function removeTodo(id){
+            //Call postTodo method with values from form
+            postRemove(id).then((todo) => {
+                renderSuccess();
+            }).catch((err) => {
+                if (err instanceof Error) {
+                    render(errorState(err.message));
+                    return;
+                }
+            })
+        }
+
         var loadAllAction = () => {
             render(loadingState());
             fetchTodos().then((todos) => {
@@ -257,6 +298,7 @@
     //Toggle clicking an item to show description
     //Clicking on a task item will show its description
     //Clicking on a task with a description showing will hide it
+    //**NOTE** If I add remove button back in need to add extra .next()
     $(document).on('click', '.todo-id_name' , function() {
         var hidden = $(this).next().next().attr('hidden');
         if(typeof hidden == typeof undefined){
@@ -267,6 +309,21 @@
             $(this).attr("id", "nameBlurred");
         }
     });
+
+    // //Remove todo from list
+    // $(document).on('click', '.remove' , function() {
+    //     var id = $(this).prev().prev().text();
+    //     //Call postTodo method with values from form
+    //     postRemove(id).then((todo) => {
+    //             renderSuccess();
+    //         }).catch((err) => {
+    //             if (err instanceof Error) {
+    //                 render(errorState(err.message));
+    //                 return;
+    //             }
+    //         })
+    // });
+
 </script>
 <body>
     <div class="container-center">
@@ -291,7 +348,9 @@
 </template>
 
 <template id="todo">
+    <dd hidden class="todo-id"></dd>
     <dt style="cursor: pointer;" class="todo-id_name"></dt>
+    <!-- <hidden button type="radio" class="remove"></button> -->
     <dd hidden class="todo-title"></dd>
     <dd hidden id="description" class="todo-description"></dd>
     <br>
