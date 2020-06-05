@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="index.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <title>Tasks</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    function postTodo(title, description) {
+        return new Promise((resolve, reject) => {
+            try {
+                jQuery.ajax({
+                    url: "http://localhost:3000/todos",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        title,
+                        description
+                    }),
+                    success: (data, textStatus, jqXHR) => {
+                        resolve(data);
+                    },
+                    error: (jqXHR, textStatus, error) => {
+                        reject({
+                            jqXHR,
+                            textStatus,
+                            error
+                        });
+                    }
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    };
+
+    function fetchTodos() {
+        return new Promise((resolve, reject) => {
+            try {
+                jQuery.ajax({
+                    url: "http://localhost:3000/todos",
+                    success: (data, textStatus, jqXHR) => {
+                        resolve(data);
+                    },
+                    error: (jqXHR, textStatus, error) => {
+                        reject({
+                            jqXHR,
+                            textStatus,
+                            error
+                        });
+                    }
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    };
+
+    var states = {
+        LOADING: "LOADING",
+        SUCCESS: "SUCCESS",
+        ERROR: "ERROR",
+    }
+
+    function loadingState() {
+        return {
+            state: states.LOADING
+        }
+    }
+    function successState(todos) {
+        return {
+            state: states.SUCCESS,
+            todos
+        }
+    }
+    function errorState(message) {
+        return {
+            state: states.ERROR,
+            message
+        }
+    }
+
+    $(() => {
+        var app = document.querySelector("#app");
+        var loadingTemplate = document.querySelector("#loading");
+        var errorTemplate = document.querySelector("#error");
+        var todosTemplate = document.querySelector("#todos");
+        var todoTemplate = document.querySelector("#todo");
+
+        var renderNewTodoForm = () => {
+            // TODO
+            // create html form, input elements and button
+            // attach listener to button to call createTodo action
+
+            //Form
+            var form= document.createElement("FORM");
+
+            form.setAttribute("id", "newTodo");
+            document.body.appendChild(form);
+
+            //Inputs
+            var title = document.createElement("INPUT");
+            title.setAttribute("id", "newTitle");
+            title.setAttribute("placeholder", "Name");
+            
+            var description = document.createElement("INPUT");
+            description.setAttribute("id", "newDescription");
+            description.setAttribute("placeholder", "Description");
+
+            document.getElementById("newTodo").appendChild(title);
+            document.getElementById("newTodo").appendChild(description);
+
+            //Button
+            var button = document.createElement("BUTTON");
+            button.setAttribute("type", "submit");
+            var t = document.createTextNode("Add Task");
+            button.appendChild(t);
+            //Button listener to call createTodo action
+            button.addEventListener("click", function(){ 
+                createTodo();
+                document.getElementById("newTodo").reset();
+            }); 
+            document.body.appendChild(button);
+        }
+        
+        var renderTodo = (todo) => {
+            var todoElem = todoTemplate.content.cloneNode(true);
+            todoElem.querySelector(".todo-id_name").innerText = todo.id + ".) " + todo.title;
+            todoElem.querySelector(".todo-title").innerText = todo.title;
+            todoElem.querySelector(".todo-description").innerText = todo.description;
+            return todoElem;
+        };
+
+        var renderTodoList = (todos) => {
+            var todosContainer = todosTemplate.content.cloneNode(true);
+            var todoList = todosContainer.querySelector(".todos");
+            for (var todo of todos) {
+                var todoElem = renderTodo(todo);
+                todoList.append(todoElem);
+            }
+            return todoList;
+        }
+
+        var appendNewTodoToList = (todo) => {
+            var todoElem = renderTodo(todo);
+            app.querySelector(".todos").appendChild(todoElem);
+        }
+
+        var renderSuccess = (todos) => {
+            var todoList = renderTodoList(todos);
+            renderNewTodoForm();
+            while (app.hasChildNodes()) {
+                app.childNodes[0].remove();
+            }
+            app.append(todoList);
+        }
+
+        var renderError = (message) => {
+            var error = errorTemplate.content.cloneNode(true);
+            error.querySelector(".error").innerText = message;
+            while (app.hasChildNodes()) {
+                app.childNodes[0].remove();
+            }
+            app.append(error);
+        }
+
+        var renderLoading = () => {
+            var loading = loadingTemplate.content.cloneNode(true);
+            while (app.hasChildNodes()) {
+                app.childNodes[0].remove();
+            }
+            app.append(loading);
+        }
+
+        var render = (fetchState) => {
+            switch (fetchState.state) {
+                case states.LOADING: {
+                    renderLoading();
+                    break;
+                }
+                case states.SUCCESS: {
+                    renderSuccess(fetchState.todos)
+                    break;
+                }
+                case states.ERROR: {
+                    renderError(fetchState.message);
+                    break;
+                }
+            }
+        }
+
+        // actions
+        var createTodo = () => {
+            //Read form values from create new todo form
+            var title = document.getElementById("newTitle").value;
+            var description = document.getElementById("newDescription").value;
+
+            //Call postTodo method with values from form
+            postTodo(title, description).then((todo) => {
+              appendNewTodoToList(todo)
+            }).catch((err) => {
+                if (err instanceof Error) {
+                    render(errorState(err.message));
+                    return;
+                }
+            })
+        }
+
+        var loadAllAction = () => {
+            render(loadingState());
+            fetchTodos().then((todos) => {
+                render(successState(todos))
+            }).catch((err) => {
+                if (err instanceof Error) {
+                    render(errorState(err.message));
+                    return;
+                }
+                render(errorState(JSON.stringify(err.jqXHR.responseJSON)));
+            });
+        };
+        loadAllAction();
+    });
+
+    //Toggle clicking an item to show description
+    //Clicking on a task item will show its description
+    //Clicking on a task with a description showing will hide it
+    $(document).on('click', '.todo-id_name' , function() {
+        var hidden = $(this).next().next().attr('hidden');
+        if(typeof hidden == typeof undefined){
+            $(this).next().next().attr('hidden', 'true');
+        }else{
+            $(this).next().next().removeAttr('hidden');
+        }
+    });
+</script>
+
+<body>
+    <h1>
+        Tasks
+    </h1>
+    <div id="app">
+    </div>
+</body>
+
+<template id="loading">
+    <p class="loading">Loading...</p>
+</template>
+
+<template id="error">
+    <p class="error"></p>
+</template>
+
+<template id="todos">
+    <dl class="todos"></dl>
+</template>
+
+<template id="todo">
+    <dt class="todo-id_name"></dt>
+    <dd hidden class="todo-title"></dd>
+    <dd hidden class="todo-description"></dd>
+    <br>
+</template>
+
+</html>
