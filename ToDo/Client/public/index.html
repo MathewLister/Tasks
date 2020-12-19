@@ -131,50 +131,25 @@
             var title = document.createElement("INPUT");
             title.setAttribute("id", "newTitle");
             title.setAttribute("placeholder", "Enter Title");
-            title.setAttribute("hidden", "true");
+            title.setAttribute("class", "form-input");
+            
             
             var description = document.createElement("INPUT");
             description.setAttribute("id", "newDescription");
             description.setAttribute("placeholder", "Add Description");
-            description.setAttribute("hidden", "true");
-
-            //Fab
-            var fab = document.createElement("DIV");
-            fab.setAttribute("class", "fab");
-            fab.setAttribute("id", "fab");
+            description.setAttribute("class", "form-input");
 
             //Submit button
             var submit = document.createElement("DIV");
             submit.setAttribute("id", "submit");
-            submit.setAttribute("hidden", "true");
 
             //Put everything on the doc
             $("#newTodo").append(form);
             document.getElementById("newTodo").appendChild(title);
             document.getElementById("newTodo").appendChild(description);
-            $("#newTodo").append(fab);
             $("#newTodo").append(submit);
-            $("#fab").append("+");
             $("#submit").append("+");
            
-            //Fab listener to show inputs
-            fab.addEventListener("click", function(){
-                var hidden = $("#newTitle").attr("hidden")
-                if(typeof hidden == typeof undefined){
-                    $("#newTitle").attr("hidden", "true");
-                    $("#newDescription").attr("hidden", "true");
-                    $("#submit").attr("hidden", "true");
-                    $("#fab").empty();  
-                    $("#fab").append("+");
-                }else{
-                    $("#newTitle").removeAttr("hidden");
-                    $("#newDescription").removeAttr("hidden");
-                    $("#submit").removeAttr("hidden");
-                    $("#fab").empty();
-                    $("#fab").append("-");
-                }   
-            });
-
             //Submit listener to call createTodo action
             submit.addEventListener("click", function(){
                 createTodo();
@@ -187,7 +162,7 @@
         var renderTodo = (todo) => {
             var todoElem = todoTemplate.content.cloneNode(true);
             todoElem.querySelector(".todo-id").innerText = todo.id;
-            todoElem.querySelector(".todo-id_name").innerText = todo.id + ". " + todo.title;
+            todoElem.querySelector(".todo-id_name").innerText = todo.title;
             todoElem.querySelector(".todo-title").innerText = todo.title;
             todoElem.querySelector(".todo-description").innerText = todo.description;
             return todoElem;
@@ -300,13 +275,12 @@
     //Clicking on a task with a description showing will hide it
     //**NOTE** If I add remove button back in need to add extra .next()
     $(document).on('click', '.todo-id_name' , function() {
-        var hidden = $(this).next().next().attr('hidden');
-        if(typeof hidden == typeof undefined){
-            $(this).next().next().attr('hidden', 'true');
-            $(this).attr("id", "nameUnblurred");
-        }else{
-            $(this).next().next().removeAttr('hidden');
+        if($(this).parent().next('.todo-description-container').children().next().is(":hidden")){
+            $(this).parent().next('.todo-description-container').children().next().removeAttr('hidden');
             $(this).attr("id", "nameBlurred");
+        }else{
+            $(this).parent().next('.todo-description-container').children().next().attr('hidden', 'true');
+            $(this).attr("id", "nameUnblurred");
         }
     });
 
@@ -349,10 +323,14 @@
 
 <template id="todo">
     <dd hidden class="todo-id"></dd>
-    <dt style="cursor: pointer;" class="todo-id_name"></dt>
-    <!-- <hidden button type="radio" class="remove"></button> -->
-    <dd hidden class="todo-title"></dd>
-    <dd hidden id="description" class="todo-description"></dd>
+    <div class="todo-container">
+        <input type="checkbox" class="remove"></input> 
+        <dt style="cursor: pointer;" class="todo-id_name"></dt>
+    </div>
+    <div class="todo-description-container">
+        <dd hidden class="todo-title"></dd>
+        <dd hidden id="description" class="todo-description"></dd>
+    </div>
     <br>
 </template>
 
